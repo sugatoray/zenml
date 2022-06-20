@@ -23,7 +23,6 @@ from steps.pytorch_data_loader import (
     pytorch_data_loader,
 )
 from steps.pytorch_evaluator import pytorch_evaluator
-from steps.pytorch_preprocessing import build_pytorch_preprocessor
 from steps.pytorch_trainer import PytorchTrainerConfig, pytorch_trainer
 
 from zenml.integrations.kserve.model_deployers import KServeModelDeployer
@@ -85,7 +84,6 @@ def main(
 
     # Initialize and run a continuous deployment pipeline run
     kserve_pytorch_pipeline(
-        build_preprocessor=build_pytorch_preprocessor(),
         build_data_loaders=pytorch_data_loader(
             PytorchDataLoaderConfig(
                 train_batch_size=batch_size, test_batch_size=batch_size

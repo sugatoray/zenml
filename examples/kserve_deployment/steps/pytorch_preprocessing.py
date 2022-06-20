@@ -16,15 +16,16 @@
 import torch
 import torchvision
 
-from zenml.steps import step
 
+def normalize_pytorch_tensor(data: torch.Tensor) -> torch.Tensor:
+    """Perform some pytorch data preprocessing.
 
-@step
-def build_pytorch_preprocessor() -> torch.nn.Module:
-    """Build some pytorch data preprocessing module.
+    There are two places where preprocessing can be performed with pytorch:
+    - passed in as transformation to the dataloader to load on the fly
+    - called within the trainer step after loading the data
 
-    The resulting transofrmation should either be called within the trainer
-    step, or it can be embedded into the dataloader.
+    In this example, we call the preprocessing function within the trainer step
+    and additionally pass the module path to the custom deployment class.
     """
     tansformation = torchvision.transforms.Normalize((0.1307,), (0.3081,))
-    return tansformation
+    return tansformation(data)

@@ -19,6 +19,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from pytorch.net import Net
 from rich import print
+from steps.pytorch_preprocessing import normalize_pytorch_tensor
 from torch.utils.data import DataLoader
 
 from zenml.steps import BaseStepConfig, step
@@ -50,6 +51,7 @@ def pytorch_trainer(
         model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(DEVICE), target.to(DEVICE)
+            data = normalize_pytorch_tensor(data)
             optimizer.zero_grad()
             output = model(data)
             loss = F.nll_loss(output, target)

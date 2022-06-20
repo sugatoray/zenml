@@ -20,7 +20,6 @@ from zenml.steps import BaseStepConfig, Output, step
 
 
 def build_data_loader(
-    preprocessor: torch.nn.Module,
     is_train: bool = True,
     batch_size: int = 4,
     shuffle: bool = True,
@@ -31,12 +30,7 @@ def build_data_loader(
             "mnist/data",
             train=is_train,
             download=True,
-            transform=torchvision.transforms.Compose(
-                [
-                    torchvision.transforms.ToTensor(),
-                    preprocessor,
-                ]
-            ),
+            transform=torchvision.transforms.ToTensor(),
         ),
         batch_size=batch_size,
         shuffle=shuffle,
@@ -55,17 +49,14 @@ class PytorchDataLoaderConfig(BaseStepConfig):
 
 @step
 def pytorch_data_loader(
-    preprocessor: torch.nn.Module,
     config: PytorchDataLoaderConfig,
 ) -> Output(train_loader=DataLoader, test_loader=DataLoader):
     train_loader = build_data_loader(
-        preprocessor=preprocessor,
         is_train=True,
         batch_size=config.train_batch_size,
         shuffle=config.train_shuffle,
     )
     test_loader = build_data_loader(
-        preprocessor=preprocessor,
         is_train=False,
         batch_size=config.test_batch_size,
         shuffle=config.test_shuffle,

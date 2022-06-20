@@ -17,6 +17,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from rich import print
+from steps.pytorch_preprocessing import normalize_pytorch_tensor
 from torch.utils.data import DataLoader
 
 from zenml.steps import step
@@ -33,6 +34,7 @@ def pytorch_evaluator(model: nn.Module, test_loader: DataLoader) -> float:
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(DEVICE), target.to(DEVICE)
+            data = normalize_pytorch_tensor(data)
             output = model(data)
             test_loss += F.nll_loss(
                 output, target, reduction="sum"
