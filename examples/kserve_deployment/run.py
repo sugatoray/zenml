@@ -17,6 +17,10 @@ from steps.deployment_trigger import DeploymentTriggerConfig, deployment_trigger
 from steps.model_deployer import custom_kserve_sklearn_deployer
 from steps.sklearn_evaluator import evaluator
 from steps.sklearn_importer import importer
+from steps.sklearn_preprocessing import (
+    apply_standard_scaler,
+    fit_standard_scaler,
+)
 from steps.sklearn_trainer import trainer
 
 
@@ -32,6 +36,8 @@ def main(
     """Run the mnist example pipeline"""
     deployment_pipeline = kserve_sklearn_pipeline(
         importer=importer(),
+        fit_and_apply_preprocessor=fit_standard_scaler(),
+        apply_preprocessor=apply_standard_scaler(),
         trainer=trainer(),
         evaluator=evaluator(),
         deployment_trigger=deployment_trigger(

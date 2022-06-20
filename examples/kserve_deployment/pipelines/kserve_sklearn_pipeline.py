@@ -20,6 +20,8 @@ from zenml.pipelines import pipeline
 @pipeline(required_integrations=[SKLEARN, KSERVE])
 def kserve_sklearn_pipeline(
     importer,
+    fit_and_apply_preprocessor,
+    apply_preprocessor,
     trainer,
     evaluator,
     deployment_trigger,
@@ -27,6 +29,8 @@ def kserve_sklearn_pipeline(
 ):
     """Links all the steps together in a pipeline"""
     X_train, X_test, y_train, y_test = importer()
+    preprocessor, X_train = fit_and_apply_preprocessor(X_train)
+    X_test = apply_preprocessor(preprocessor, X_test)
     model = trainer(X_train=X_train, y_train=y_train)
     accuracy = evaluator(X_test=X_test, y_test=y_test, model=model)
     deployment_decision = deployment_trigger(accuracy=accuracy)
