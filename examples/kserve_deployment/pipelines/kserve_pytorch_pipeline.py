@@ -23,13 +23,15 @@ from zenml.pipelines import pipeline
     required_integrations=[KSERVE, PYTORCH],
 )
 def kserve_pytorch_pipeline(
-    data_loader,
+    build_preprocessor,
+    build_data_loaders,
     trainer,
     evaluator,
     deployment_trigger,
     deployer,
 ):
-    train_loader, test_loader = data_loader()
+    preprocessor = build_preprocessor()
+    train_loader, test_loader = build_data_loaders(preprocessor)
     model = trainer(train_loader)
     accuracy = evaluator(model=model, test_loader=test_loader)
     deployment_decision = deployment_trigger(accuracy=accuracy)

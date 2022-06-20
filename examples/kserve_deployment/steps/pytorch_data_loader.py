@@ -12,7 +12,6 @@
 #  or implied. See the License for the specific language governing
 #  permissions and limitations under the License.
 
-
 import torch
 import torchvision
 from torch.utils.data import DataLoader
@@ -21,7 +20,10 @@ from zenml.steps import BaseStepConfig, Output, step
 
 
 def build_data_loader(
-    is_train: bool = True, batch_size: int = 4, shuffle: bool = True
+    preprocessor: torch.nn.Module,
+    is_train: bool = True,
+    batch_size: int = 4,
+    shuffle: bool = True,
 ) -> DataLoader:
     """Returns a torch Dataloader from two np arrays."""
     data_loader = torch.utils.data.DataLoader(
@@ -32,7 +34,7 @@ def build_data_loader(
             transform=torchvision.transforms.Compose(
                 [
                     torchvision.transforms.ToTensor(),
-                    torchvision.transforms.Normalize((0.1307,), (0.3081,)),
+                    preprocessor,
                 ]
             ),
         ),
@@ -53,14 +55,17 @@ class PytorchDataLoaderConfig(BaseStepConfig):
 
 @step
 def pytorch_data_loader(
+    preprocessor: torch.nn.Module,
     config: PytorchDataLoaderConfig,
 ) -> Output(train_loader=DataLoader, test_loader=DataLoader):
     train_loader = build_data_loader(
+        preprocessor=preprocessor,
         is_train=True,
         batch_size=config.train_batch_size,
         shuffle=config.train_shuffle,
     )
     test_loader = build_data_loader(
+        preprocessor=preprocessor,
         is_train=False,
         batch_size=config.test_batch_size,
         shuffle=config.test_shuffle,
